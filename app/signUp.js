@@ -8,22 +8,31 @@ import { TouchableOpacity } from 'react-native-gesture-handler'
 import { tintColorLight } from '../constants/Colors'
 import { useRouter } from 'expo-router'
 import CustomKeyboardAdvoidingView from '../components/CustomKeyboardAdvoidingView'
+import { useAuth } from '../context/authContext'
 
 const SignUp = () => {
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const {register} = useAuth();
 
   const emailRef = useRef("");
   const passwordRef = useRef("");
   const usernameRef = useRef("");
+  const profileUrlRef = useRef("");
 
-  const [loading, setLoading] = useState(false);
 
   const handleRegister = async() => {
     if(!emailRef.current || !passwordRef.current || !usernameRef.current) {
-      Alert.alert('Sign up', 'Please fill all the fields!');
+      Alert.alert('Sign up', 'Please fill all the required fields!');
       return;
     }
-    //login process
+
+    setLoading(true)
+    let response = await register(emailRef.current, passwordRef.current, usernameRef.current, profileUrlRef.current)
+    console.log('got result: ', response);
+    if(!response.success) {
+      Alert.alert('Sign Up', response.msg);
+    }
   }
   return (
     <CustomKeyboardAdvoidingView>
@@ -59,6 +68,7 @@ const SignUp = () => {
             <View style={styles.textInput} >
               <Octicons style={{marginLeft: 8}} name='lock' size={hp(2.7)} color='gray'/>
               <TextInput
+                onChangeText={value=> passwordRef.current=value}
                 style={{fontSize: hp(2), marginLeft: 8}}
                 className='flex-1 font-semibold text-neutral-700'
                 placeholder='Password'
@@ -69,6 +79,7 @@ const SignUp = () => {
             <View style={styles.textInput} >
               <Octicons style={{marginLeft: 8}} name='lock' size={hp(2.7)} color='gray'/>
               <TextInput
+                onChangeText={value=> passwordRef.current=value}
                 style={{fontSize: hp(2), marginLeft: 8}}
                 className='flex-1 font-semibold text-neutral-700'
                 placeholder='Re-type password'
@@ -79,7 +90,7 @@ const SignUp = () => {
             <View style={styles.textInput} >
               <Feather style={{marginLeft: 8}} name='image' size={hp(2.7)} color='gray'/>
               <TextInput
-                onChangeText={value=> usernameRef.current=value}
+                onChangeText={value=> profileUrlRef.current=value}
                 style={{fontSize: hp(2), marginLeft: 8}}
                 className='flex-1 font-semibold text-neutral-700'
                 placeholder='Image'
@@ -90,7 +101,7 @@ const SignUp = () => {
           <View>
             {
               loading? (
-                  <View >
+                  <View style={{paddingTop: 20}}>
                     <ActivityIndicator size='large' color={tintColorLight}></ActivityIndicator>
                   </View>
               ):

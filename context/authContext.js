@@ -1,4 +1,7 @@
-import { Children, createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
+import {createUserWithEmailAndPassword, onAuthStateChanged} from "firebase/auth"
+import {auth} from "../firebaseConfig"
+import {doc, setDoc, getDoc} from "firebase/firestore"
 
 
 export const AuthContext = createContext()
@@ -9,9 +12,16 @@ export const AuthContextProvider = ({children}) => {
 
     useEffect(() => {
         // On authStateChanged
-        setTimeout(() => {
-            setIsAuthenticated(false)
-        }, 3000);
+        const unsub = onAuthStateChanged(auth, (user)=> {
+            if(user) {
+                setIsAuthenticated(true);
+                setUser(user);
+           } else {
+                setIsAuthenticated(false);
+                setUser(null);
+           }
+        })
+        return unsub;
     }, [])
 
     const login = async(email, password) => {
@@ -32,9 +42,21 @@ export const AuthContextProvider = ({children}) => {
 
     const register = async(email, password, username, profileUrl) => {
         try {
+            const response = await createUserWithEmailAndPassword(auth, email, password);
+            console.log('response.user: ', response?.user);
+            //setUser(response?.user)
+            //setIsAuthenticated(true)
 
+            await setDoc(doc(db, "users", response?.user?.uid), {
+                username,
+                profileUrl,
+                userId: response?.user?.uid
+            });
+            return {success: true, data: response?.user}
         } catch(e) {
-
+            let msg = e.message;
+            if(msg.includes('(auth/invalid-email')) msg = 'Invalid email';
+            return {success: false, msg: msg}
         }
     }
 
@@ -49,5 +71,5 @@ export const useAuth = () => {
     if (!value) {
         throw new Error('useAuth must be wrapped inside AuthContextProvider')
     }
-    return value
+    return value;
 }
