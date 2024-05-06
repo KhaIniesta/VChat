@@ -7,8 +7,7 @@ import { Feather } from '@expo/vector-icons';
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import { tintColorLight } from '../constants/Colors'
 import { useRouter } from 'expo-router'
-import DateTimePicker from '@react-native-community/datetimepicker';
-import RNDateTimePicker from '@react-native-community/datetimepicker'
+import CustomKeyboardAdvoidingView from '../components/CustomKeyboardAdvoidingView'
 
 const SignUp = () => {
   const router = useRouter();

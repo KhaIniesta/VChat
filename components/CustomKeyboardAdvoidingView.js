@@ -1,11 +1,11 @@
-import { View, Text, KeyboardAvoidingView } from 'react-native'
+import { View, Text, KeyboardAvoidingView, Platform } from 'react-native'
 import React, { Children } from 'react'
 import { ScrollView } from 'react-native-gesture-handler'
 
 export default function CustomKeyboardAdvoidingView({children}) {
   return (
     <KeyboardAvoidingView
-      behavior='padding'
+      behavior={Platform.OS === 'ios'? 'padding': 'height' }
       style={{flex: 1}}
     >
         <ScrollView
