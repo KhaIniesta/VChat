@@ -1,15 +1,30 @@
-import { View, Text, Image, TextInput, StyleSheet, TouchableHighlight} from 'react-native'
-import React from 'react'
+import { View, Text, Image, TextInput, StyleSheet, TouchableHighlight, Alert, ActivityIndicator} from 'react-native'
+import React, { useRef, useState } from 'react'
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen'
 import { StatusBar } from 'expo-status-bar'
 import { Octicons } from '@expo/vector-icons'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import { tintColorLight } from '../constants/Colors'
-import { Link } from 'expo-router'
+import { useRouter } from 'expo-router'
+import CustomKeyboardAdvoidingView from '../components/CustomKeyboardAdvoidingView'
 
 const SignIn = () => {
+  const router = useRouter();
+
+  const emailRef = useRef("");
+  const passwordRef = useRef("");
+
+  const [loading, setLoading] = useState(false);
+
+  const handleLogin = async() => {
+    if(!emailRef.current || !passwordRef.current) {
+      Alert.alert('Sign in', 'Please fill all the fields!');
+      return;
+    }
+    //login process
+  }
   return (
-    <View className='flex-1'>
+    <CustomKeyboardAdvoidingView>
       <StatusBar style='dark'/>
       <View className='flex-1 gap-12' style={{paddingTop: hp(8), paddingHorizontal: wp(5)}}>
         <View className='items-center'>
@@ -22,6 +37,7 @@ const SignIn = () => {
             <View style={styles.textInput} >
               <Octicons style={{marginLeft: 8}} name='mail' size={hp(2.7)} color='gray'/>
               <TextInput
+                onChangeText={value=> emailRef.current=value}
                 style={{fontSize: hp(2), marginLeft: 8}}
                 className='flex-1 font-semibold text-neutral-700'
                 placeholder='Email'
@@ -33,25 +49,38 @@ const SignIn = () => {
                 style={{fontSize: hp(2), marginLeft: 8}}
                 className='flex-1 font-semibold text-neutral-700'
                 placeholder='Password'
+                secureTextEntry
                 placeholderTextColor={'gray'}/>
             </View>
           </View>
-          <TouchableOpacity style={styles.forgotPassword}>
+          <TouchableOpacity style={styles.forgotPassword} >
             <Text style={{color: '#64748b', fontWeight: 500}}>Forgot password?</Text>
           </TouchableOpacity>
           {/* button */}
-          <TouchableOpacity style={styles.signInBtn}>
-            <Text style={{color: '#fff', fontWeight: 800, fontSize: hp(2)}}>Sign in</Text>
-          </TouchableOpacity>
+          <View>
+            {
+              loading? (
+                  <View >
+                    <ActivityIndicator size='large' color={tintColorLight}></ActivityIndicator>
+                  </View>
+              ):
+              (
+                <TouchableOpacity style={styles.signInBtn} onPress={handleLogin}>
+                  <Text style={{color: '#fff', fontWeight: 800, fontSize: hp(2)}}>Sign in</Text>
+                </TouchableOpacity>
+              )
+            }
+          </View>
+
 
           <View style={styles.link}>
             <Text style={{color: '#64748b'}}>Don't have an account yet? </Text>
-            <TouchableOpacity>
-              <Link href={'/'} style={{color: '#64748b', fontWeight: '500', color: tintColorLight}}>Sign Up</Link>
+            <TouchableOpacity onPress={()=>{ router.push('/signUp') }}>
+              <Text  style={{color: '#64748b', fontWeight: '500', color: tintColorLight}}>Sign Up</Text>
             </TouchableOpacity>
           </View>
       </View>
-    </View>
+    </CustomKeyboardAdvoidingView>
   )
 }
 
