@@ -1,7 +1,8 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import {createUserWithEmailAndPassword, onAuthStateChanged} from "firebase/auth"
-import {auth} from "../firebaseConfig"
+import {createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword, signOut} from "firebase/auth"
+import {auth, db} from "../firebaseConfig"
 import {doc, setDoc, getDoc} from "firebase/firestore"
+import SignUp from "../app/signUp";
 
 
 export const AuthContext = createContext()
@@ -12,6 +13,7 @@ export const AuthContextProvider = ({children}) => {
 
     useEffect(() => {
         // On authStateChanged
+        console.log('got user: ', user)
         const unsub = onAuthStateChanged(auth, (user)=> {
             if(user) {
                 setIsAuthenticated(true);
@@ -26,17 +28,22 @@ export const AuthContextProvider = ({children}) => {
 
     const login = async(email, password) => {
         try {
-
+            const response = await signInWithEmailAndPassword(auth, email, password);
+            return {success: true}
         } catch(e) {
-
+            let msg = e.message;
+            if(msg.includes('(auth/invalid-email')) msg='Invalid email'
+            if(msg.includes('(auth/invalid-credential')) msg='Invalid credentials'
+            return {success: false, msg}
         }
     }
 
     const logout = async() => {
         try {
-
+            await signOut(auth);
+            return {success: true}
         } catch(e) {
-
+            return {success: false, msg: e.message, error: e};
         }
     }
 

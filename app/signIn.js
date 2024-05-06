@@ -7,9 +7,11 @@ import { TouchableOpacity } from 'react-native-gesture-handler'
 import { tintColorLight } from '../constants/Colors'
 import { useRouter } from 'expo-router'
 import CustomKeyboardAdvoidingView from '../components/CustomKeyboardAdvoidingView'
+import { useAuth } from '../context/authContext'
 
 const SignIn = () => {
   const router = useRouter();
+  const {login} = useAuth();
 
   const emailRef = useRef("");
   const passwordRef = useRef("");
@@ -21,7 +23,14 @@ const SignIn = () => {
       Alert.alert('Sign in', 'Please fill all the fields!');
       return;
     }
-    //login process
+
+    setLoading(true);
+    const response = await login(emailRef.current, passwordRef.current);
+    console.log('sign in response: ', response);
+    setLoading(false);
+    if(!response.success) {
+      Alert.alert('Sign In', response.msg);
+    }
   }
   return (
     <CustomKeyboardAdvoidingView>
@@ -46,6 +55,7 @@ const SignIn = () => {
             <View style={styles.textInput} >
               <Octicons style={{marginLeft: 8}} name='lock' size={hp(2.7)} color='gray'/>
               <TextInput
+                onChangeText={value=> passwordRef.current=value}
                 style={{fontSize: hp(2), marginLeft: 8}}
                 className='flex-1 font-semibold text-neutral-700'
                 placeholder='Password'
