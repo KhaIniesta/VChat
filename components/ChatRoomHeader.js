@@ -24,7 +24,7 @@ const ChatRoomHeader = ({user, router}) => {
                                 source={user?.profileUrl}
                                 style={{height: hp(5), aspectRatio: 1, borderRadius: 100}}
                             />
-                            <Text style={{fontSize: hp(2.5)}} className="text-neutral-700 font-medium">
+                            <Text style={{fontSize: hp(2.5)}} className="text-neutral-700 font-semibold">
                                 {user?.username}
                             </Text>
                         </View>
