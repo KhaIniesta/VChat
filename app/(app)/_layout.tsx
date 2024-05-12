@@ -1,7 +1,7 @@
-import { View, Text } from 'react-native'
 import React from 'react'
 import { Stack } from 'expo-router'
 import HomeHeader from '../../components/HomeHeader'
+import "../../global.css"
 
 const _layout = () => {
   return (
@@ -9,7 +9,7 @@ const _layout = () => {
       <Stack.Screen 
         name='home'
         options={{
-          header: () => <HomeHeader />
+          header: () => <HomeHeader /> 
         }}
       />
     </Stack>
