@@ -2,8 +2,6 @@ import { createContext, useContext, useEffect, useState } from "react";
 import {createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword, signOut} from "firebase/auth"
 import {auth, db} from "../firebaseConfig"
 import {doc, setDoc, getDoc} from "firebase/firestore"
-import SignUp from "../app/signUp";
-
 
 export const AuthContext = createContext()
 
@@ -13,18 +11,28 @@ export const AuthContextProvider = ({children}) => {
 
     useEffect(() => {
         // On authStateChanged
-        console.log('got user: ', user)
         const unsub = onAuthStateChanged(auth, (user)=> {
             if(user) {
                 setIsAuthenticated(true);
                 setUser(user);
+                updateUserData(user.uid)
            } else {
                 setIsAuthenticated(false);
                 setUser(null);
            }
         })
         return unsub;
-    }, [])
+    }, []);
+
+    const updateUserData = async(userId) => {
+        const docRef = doc(db, 'users', userId)
+        const docSnap = await getDoc(docRef)
+
+        if (docSnap.exists()) {
+            let data = docSnap.data()
+            setUser({...user, username: data.username, profileUrl: data.profileUrl, userId: data.userId})
+        }
+    }
 
     const login = async(email, password) => {
         try {
@@ -33,7 +41,7 @@ export const AuthContextProvider = ({children}) => {
         } catch(e) {
             let msg = e.message;
             if(msg.includes('(auth/invalid-email')) msg='Invalid email'
-            if(msg.includes('(auth/invalid-credential')) msg='Invalid credentials'
+            if(msg.includes('(auth/invalid-credential')) msg='Wrong credentials'
             return {success: false, msg}
         }
     }
@@ -63,6 +71,7 @@ export const AuthContextProvider = ({children}) => {
         } catch(e) {
             let msg = e.message;
             if(msg.includes('(auth/invalid-email')) msg = 'Invalid email';
+            if(msg.includes('(auth/email-already-in-use')) msg = 'This email is already in use';
             return {success: false, msg: msg}
         }
     }

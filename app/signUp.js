@@ -29,6 +29,7 @@ const SignUp = () => {
 
     setLoading(true)
     let response = await register(emailRef.current, passwordRef.current, usernameRef.current, profileUrlRef.current)
+    setLoading(false)
     console.log('got result: ', response);
     if(!response.success) {
       Alert.alert('Sign Up', response.msg);
@@ -100,6 +101,13 @@ const SignUp = () => {
           {/* button */}
           <View>
             {
+              <TouchableOpacity style={styles.signInBtn} onPress={handleRegister}>
+                <Text style={{color: '#fff', fontWeight: 800, fontSize: hp(2)}}>Sign up</Text>
+              </TouchableOpacity>
+            }
+          </View>
+          {/* <View>
+            {
               loading? (
                   <View style={{paddingTop: 20}}>
                     <ActivityIndicator size='large' color={tintColorLight}></ActivityIndicator>
@@ -111,7 +119,7 @@ const SignUp = () => {
                 </TouchableOpacity>
               )
             }
-          </View>
+          </View> */}
           <View style={styles.link}>
             <Text style={{color: '#64748b'}}>Already have an account? </Text>
             <TouchableOpacity onPress={()=>{ router.push('/signIn') }}>

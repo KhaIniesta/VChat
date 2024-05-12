@@ -66,6 +66,12 @@ const SignIn = () => {
           <TouchableOpacity style={styles.forgotPassword} >
             <Text style={{color: '#64748b', fontWeight: 500}}>Forgot password?</Text>
           </TouchableOpacity>
+          <View style={styles.link}>
+            <Text style={{color: '#64748b'}}>Don't have an account yet? </Text>
+            <TouchableOpacity onPress={()=>{ router.push('/signUp') }}>
+              <Text  style={{color: '#64748b', fontWeight: '500', color: tintColorLight}}>Sign Up</Text>
+            </TouchableOpacity>
+          </View>
           {/* button */}
           <View>
             {
@@ -80,14 +86,6 @@ const SignIn = () => {
                 </TouchableOpacity>
               )
             }
-          </View>
-
-
-          <View style={styles.link}>
-            <Text style={{color: '#64748b'}}>Don't have an account yet? </Text>
-            <TouchableOpacity onPress={()=>{ router.push('/signUp') }}>
-              <Text  style={{color: '#64748b', fontWeight: '500', color: tintColorLight}}>Sign Up</Text>
-            </TouchableOpacity>
           </View>
       </View>
     </CustomKeyboardAdvoidingView>
@@ -108,7 +106,6 @@ const styles = StyleSheet.create({
   forgotPassword: {
     justifyContent: 'center',
     alignItems: 'flex-end',
-    marginTop: 12
   },
   signInBtn: {
     borderRadius: 12,
@@ -116,10 +113,9 @@ const styles = StyleSheet.create({
     height: hp(6),
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 20,
+    marginBottom:20
   },
   link: {
-    marginVertical: 20,
     flexDirection: 'row',
     justifyContent: 'center'
   },
