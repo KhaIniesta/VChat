@@ -7,6 +7,8 @@ import {
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
 import ChatList from "../../components/ChatList"
+import { query, where } from 'firebase/firestore';
+import { userRef } from '../../firebaseConfig';
 
 
 const Home = () => {
@@ -20,6 +22,7 @@ const Home = () => {
 
   const getUsers = async() => {
     // Fetch users
+    const q = query(userRef, where)
   }
 
   return (
