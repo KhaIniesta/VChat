@@ -7,7 +7,7 @@ import { Feather } from '@expo/vector-icons';
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import { tintColorLight } from '../constants/Colors'
 import { useRouter } from 'expo-router'
-import CustomKeyboardAdvoidingView from '../components/CustomKeyboardAdvoidingView'
+import CustomKeyboardAdvoidingView from '../components/CustomKeyboardAvoidingView'
 import { useAuth } from '../context/authContext'
 
 const SignUp = () => {
