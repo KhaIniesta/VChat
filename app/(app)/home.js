@@ -9,6 +9,7 @@ import {
 import ChatList from "../../components/ChatList"
 import { getDocs, query, where } from 'firebase/firestore';
 import { userRef } from '../../firebaseConfig';
+import { tintColorLight } from '../../constants/Colors';
 
 
 const Home = () => {

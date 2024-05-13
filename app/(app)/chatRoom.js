@@ -59,7 +59,7 @@ const ChatRoom = () => {
   const updateScrollView = () => {
     setTimeout(() => {
       scrollViewRef?.current.scrollToEnd({animated: true})
-    }, 500);
+    }, 100);
   }
 
   useEffect(() => {

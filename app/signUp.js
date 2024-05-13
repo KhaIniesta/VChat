@@ -38,11 +38,11 @@ const SignUp = () => {
   return (
     <CustomKeyboardAdvoidingView>
       <StatusBar style='dark'/>
-      <View className='flex-1 gap-12' style={{paddingTop: hp(8), paddingHorizontal: wp(5)}}>
+      <View className='flex-1 gap-10' style={{paddingTop: hp(8), paddingHorizontal: wp(5)}}>
         <View className='items-center'>
           <Image style={{height: hp(25)}} resizeMode='contain' source={require('../assets/images/login-illustration.jpg')}/>
         </View>
-          <View className='gap-10 items-center'>
+          <View className='gap-8 items-center'>
             <Text style={{fontSize: hp(4), fontWeight: 700, marginVertical: 20}} >Sign Up</Text>
 
             {/* email */}
@@ -77,7 +77,7 @@ const SignUp = () => {
                 placeholderTextColor={'gray'}/>
             </View>
             {/* re-type password */}
-            <View style={styles.textInput} >
+            {/* <View style={styles.textInput} >
               <Octicons style={{marginLeft: 8}} name='lock' size={hp(2.7)} color='gray'/>
               <TextInput
                 onChangeText={value=> passwordRef.current=value}
@@ -86,7 +86,7 @@ const SignUp = () => {
                 placeholder='Re-type password'
                 secureTextEntry
                 placeholderTextColor={'gray'}/>
-            </View>
+            </View> */}
             {/* image */}
             <View style={styles.textInput} >
               <Feather style={{marginLeft: 8}} name='image' size={hp(2.7)} color='gray'/>
@@ -140,12 +140,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 8,
-    marginTop: 20
-  },
-  forgotPassword: {
-    justifyContent: 'center',
-    alignItems: 'flex-end',
-    marginTop: 12
   },
   signInBtn: {
     borderRadius: 12,
@@ -153,10 +147,8 @@ const styles = StyleSheet.create({
     height: hp(6),
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 20,
   },
   link: {
-    marginVertical: 20,
     flexDirection: 'row',
     justifyContent: 'center'
   },

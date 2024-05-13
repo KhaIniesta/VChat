@@ -15,10 +15,11 @@ import {
 } from "react-native-popup-menu";
 import { MenuItem } from "./CustomMenuItem";
 import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
+import { tintColorDark, tintColorLight } from "../constants/Colors";
 export const HomeHeader = () => {
   const { user, logout } = useAuth();
   const handleProfile = () => {
-
+        
   }
   const handleLogout = async() => {
     await logout()
@@ -26,8 +27,8 @@ export const HomeHeader = () => {
 
   return (
     <View
-      style={{ paddingTop: 40 }}
-      className="flex-row justify-between px-5 bg-indigo-400 pb-6 rounded-b-3xl shadow"
+      style={{ paddingTop: 40, backgroundColor: tintColorLight }}
+      className="flex-row justify-between px-5 pb-6 rounded-b-3xl shadow"
     >
       <View>
         <Text style={{ fontSize: hp(3) }} className="font-medium text-white">

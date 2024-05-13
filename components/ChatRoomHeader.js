@@ -7,6 +7,7 @@ import {
     heightPercentageToDP as hp,
   } from "react-native-responsive-screen";
 import { Image } from 'expo-image';
+import { tintColorLight } from '../constants/Colors';
 
 const ChatRoomHeader = ({user, router}) => {
     return (
@@ -17,7 +18,7 @@ const ChatRoomHeader = ({user, router}) => {
                 headerLeft: () => (
                     <View className="flex-row items-center gap-4">
                         <Pressable onPress={() => {router.back()}}>
-                            <Entypo name='chevron-left' size={hp(4)} color="#737373" />
+                            <Entypo name='chevron-left' size={hp(4)} color={tintColorLight} />
                         </Pressable>
                         <View className="flex-row items-center gap-3">
                             <Image 
@@ -32,8 +33,8 @@ const ChatRoomHeader = ({user, router}) => {
                 ),
                 headerRight: () => (
                     <View className="flex-row items-center gap-8">
-                        <Ionicons name='call' size={hp(3)} color={"#737373"} />
-                        <FontAwesome5 name='info-circle' size={hp(3)} color={"#737373"} />
+                        <Ionicons name='call' size={hp(3)} color={tintColorLight} />
+                        <FontAwesome5 name='info-circle' size={hp(3)} color={tintColorLight} />
                     </View>
                 )
             }}

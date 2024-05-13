@@ -40,8 +40,7 @@ const SignIn = () => {
           <Image style={{height: hp(25)}} resizeMode='contain' source={require('../assets/images/login-illustration.jpg')}/>
         </View>
           <View className='gap-10 items-center'>
-            <Text style={{fontSize: hp(4), fontWeight: 700, marginVertical: 20}} >Sign In</Text>
-
+            <Text style={{fontSize: hp(4), fontWeight: 700}} >Sign In</Text>
             {/* input */}
             <View style={styles.textInput} >
               <Octicons style={{marginLeft: 8}} name='mail' size={hp(2.7)} color='gray'/>
@@ -66,12 +65,6 @@ const SignIn = () => {
           <TouchableOpacity style={styles.forgotPassword} >
             <Text style={{color: '#64748b', fontWeight: 500}}>Forgot password?</Text>
           </TouchableOpacity>
-          <View style={styles.link}>
-            <Text style={{color: '#64748b'}}>Don't have an account yet? </Text>
-            <TouchableOpacity onPress={()=>{ router.push('/signUp') }}>
-              <Text  style={{color: '#64748b', fontWeight: '500', color: tintColorLight}}>Sign Up</Text>
-            </TouchableOpacity>
-          </View>
           {/* button */}
           <View>
             {
@@ -87,6 +80,12 @@ const SignIn = () => {
               )
             }
           </View>
+          <View style={styles.link}>
+            <Text style={{color: '#64748b'}}>Don't have an account yet? </Text>
+            <TouchableOpacity onPress={()=>{ router.push('/signUp') }}>
+              <Text  style={{color: '#64748b', fontWeight: '500', color: tintColorLight}}>Sign Up</Text>
+            </TouchableOpacity>
+          </View>
       </View>
     </CustomKeyboardAdvoidingView>
   )
@@ -101,7 +100,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 8,
-    marginTop: 20
   },
   forgotPassword: {
     justifyContent: 'center',
@@ -113,7 +111,6 @@ const styles = StyleSheet.create({
     height: hp(6),
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom:20
   },
   link: {
     flexDirection: 'row',
