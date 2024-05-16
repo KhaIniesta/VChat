@@ -12,5 +12,5 @@
     "**/*.tsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts"
-, "context/authContext.js", "app/signUp.js", "app/signIn.js", "components/CustomKeyboardAvoidingView.js", "app/(app)/home.js"  ]
+, "context/authContext.js", "app/signUp.js", "app/signIn.js", "components/CustomKeyboardAvoidingView.js", "app/(app)/home.js", "app/(app)/_layout.tsx"  ]
 }
