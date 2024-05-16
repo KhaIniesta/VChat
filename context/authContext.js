@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import {createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword, signOut} from "firebase/auth"
+import {createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword, signOut, updateProfile as firebaseUpdateProfile} from "firebase/auth"
 import {auth, db} from "../firebaseConfig"
 import {doc, setDoc, getDoc} from "firebase/firestore"
 
@@ -59,8 +59,6 @@ export const AuthContextProvider = ({children}) => {
         try {
             const response = await createUserWithEmailAndPassword(auth, email, password);
             console.log('response.user: ', response?.user);
-            //setUser(response?.user)
-            //setIsAuthenticated(true)
 
             await setDoc(doc(db, "users", response?.user?.uid), {
                 username,
@@ -76,8 +74,35 @@ export const AuthContextProvider = ({children}) => {
         }
     }
 
+    const updateProfile = async (newDisplayName, newPhotoURL) => {
+        const user = auth.currentUser;
+        if (user) {
+            try {
+                await firebaseUpdateProfile(user, {
+                    displayName: newDisplayName,
+                    photoURL: newPhotoURL
+                });
+                await setDoc(doc(db, "users", user.uid), {
+                    username: newDisplayName,
+                    profileUrl: newPhotoURL,
+                    userId: user.uid
+                }, { merge: true });
+                setUser((prevUser) => ({
+                    ...prevUser,
+                    displayName: newDisplayName,
+                    photoURL: newPhotoURL
+                }));
+                return { success: true };
+            } catch (e) {
+                return { success: false, msg: e.message, error: e };
+            }
+        } else {
+            return { success: false, msg: 'No user is signed in' };
+        }
+    };
+
     return (
-        <AuthContext.Provider value={{user, isAuthenticated, login, register, logout}}>{children}</AuthContext.Provider>
+        <AuthContext.Provider value={{user, isAuthenticated, login, register, logout, updateProfile}}>{children}</AuthContext.Provider>
     );
 }
 

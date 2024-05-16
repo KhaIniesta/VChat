@@ -16,10 +16,13 @@ import {
 import { MenuItem } from "./CustomMenuItem";
 import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
 import { tintColorDark, tintColorLight } from "../constants/Colors";
+import { router } from "expo-router";
+
 export const HomeHeader = () => {
   const { user, logout } = useAuth();
   const handleProfile = () => {
-        
+    // router.push('/(app)/profile')
+    router.push({pathname: '/(app)/profile', params: user})
   }
   const handleLogout = async() => {
     await logout()
