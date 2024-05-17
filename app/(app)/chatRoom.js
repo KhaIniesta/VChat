@@ -54,7 +54,7 @@ const ChatRoom = () => {
       unsub()
       KeyboardDidShowListener.remove()
     }
-  }, []);
+  }, [item]);
 
   const updateScrollView = () => {
     setTimeout(() => {
