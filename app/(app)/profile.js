@@ -38,7 +38,7 @@ import { db } from "../../firebaseConfig";
 const Profile = () => {
   const { user, updatePasswordForUser, logout, updateUserNameAndProfileUrl } =
     useAuth(); // logged user
-  const sendedUser = useLocalSearchParams(); // second user
+  const sentUser = useLocalSearchParams(); // second user
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const { register } = useAuth();
@@ -51,7 +51,6 @@ const Profile = () => {
 
   const handleUpdate = async () => {
     handleUpdateUsernameAndProfileUrl();
-    // handleUpdatePassword()
   };
 
   const handleUpdateUsernameAndProfileUrl = async () => {
@@ -97,7 +96,7 @@ const Profile = () => {
       const newReqFriend = await addDoc(reqFriendsRef, {
         userReqId: userId,
       });
-      setAddFriendText("Sended request");
+      setAddFriendText("sent request");
       console.log("Friend request sent successfully", newReqFriend.id);
     } catch (e) {
       console.error("Error sending friend request: ", e);
@@ -122,7 +121,24 @@ const Profile = () => {
     return false;
   };
 
-  const isFriendRequestPending = async (userId, friendId) => {
+  const isSentAddFriendRequest = async (userId, friendId) => {
+    try {
+      const q = query(
+        collection(db, `users/${friendId}/reqFriends`),
+        where("userReqId", "==", userId)
+      );
+      const querySnapshot = await getDocs(q);
+      if (!querySnapshot.empty) {
+        setAddFriendText("Sent request")
+        return true;
+      }
+    } catch (e) {
+      console.error("Error checking friend request: ", e);
+    }
+    return false;
+  };
+
+  const isReceivedAddFriendRequest = async (userId, friendId) => {
     try {
       const q = query(
         collection(db, `users/${userId}/reqFriends`),
@@ -170,27 +186,36 @@ const Profile = () => {
   //    Return  //////////////////////////////////////////////////////////////////////////////////
   // My profile
   const [isFriendStatus, setIsFriendStatus] = useState(false);
-  const [isFriendRequestPendingStatus, setIsFriendRequestPendingStatus] =
-    useState(false);
+  const [isSentFriendRequestStatus, setIsSentFriendRequestStatus] = useState(false);
+  const [isReceivedFriendRequestStatus, setIsReceivedFriendRequestStatus] = useState(false);
+
 
   useEffect(() => {
     const checkFriendship = async () => {
-      const friendStatus = await isFriend(user?.userId, sendedUser?.userId);
+      const friendStatus = await isFriend(user?.userId, sentUser?.userId);
       setIsFriendStatus(friendStatus);
     };
     const checkFriendRequest = async () => {
-      const friendRequestStatus = await isFriendRequestPending(
+      const friendRequestStatus = await isSentAddFriendRequest(
         user?.userId,
-        sendedUser?.userId
+        sentUser?.userId
       );
-      setIsFriendRequestPendingStatus(friendRequestStatus);
+      setIsSentFriendRequestStatus(friendRequestStatus);
+    };
+    const checkReceivedFriendRequest = async () => {
+      const friendReceivedStatus = await isReceivedAddFriendRequest(
+        user?.userId,
+        sentUser?.userId
+      );
+      setIsReceivedFriendRequestStatus(friendReceivedStatus);
     };
 
     checkFriendship();
     checkFriendRequest();
-  }, [user?.userId, sendedUser?.userId]);
+    checkReceivedFriendRequest();
+  }, [user?.userId, sentUser?.userId]);
 
-  if (user?.userId == sendedUser?.userId) {
+  if (user?.userId == sentUser?.userId) {
     usernameRef.current = user?.username;
     profileUrlRef.current = user?.profileUrl;
 
@@ -290,10 +315,10 @@ const Profile = () => {
           <View className="items-center">
             <Image
               style={{ height: hp(20), aspectRatio: 1, borderRadius: 100 }}
-              source={{ uri: sendedUser?.profileUrl }}
+              source={{ uri: sentUser?.profileUrl }}
             />
             <Text style={{ fontSize: hp(4), fontWeight: 700, paddingTop: 10 }}>
-              {sendedUser?.username}
+              {sentUser?.username}
             </Text>
           </View>
           {/* button */}
@@ -304,7 +329,7 @@ const Profile = () => {
                 onPress={() => {
                   router.push({
                     pathname: "/(app)/chatRoom",
-                    params: sendedUser,
+                    params: sentUser,
                   });
                 }}
               >
@@ -320,9 +345,8 @@ const Profile = () => {
       </CustomKeyboardAdvoidingView>
     );
   }
-
-  // Is request add friend:
-  if (isFriendRequestPendingStatus) {
+  // Sent a request to another user
+  if (isSentFriendRequestStatus) {
     return (
       <CustomKeyboardAdvoidingView>
         <StatusBar style="dark" />
@@ -334,10 +358,10 @@ const Profile = () => {
           <View className="items-center">
             <Image
               style={{ height: hp(20), aspectRatio: 1, borderRadius: 100 }}
-              source={{ uri: sendedUser?.profileUrl }}
+              source={{ uri: sentUser?.profileUrl }}
             />
             <Text style={{ fontSize: hp(4), fontWeight: 700, paddingTop: 10 }}>
-              {sendedUser?.username}
+              {sentUser?.username}
             </Text>
           </View>
           {/* button */}
@@ -346,7 +370,48 @@ const Profile = () => {
               <TouchableOpacity
                 style={styles.updateBtn}
                 onPress={() => {
-                  acceptFriendRequest(user?.userId, sendedUser?.userId);
+                  acceptFriendRequest(user?.userId, sentUser?.userId);
+                }}
+                disabled={addFriendText == "Sent request"}
+              >
+                <Text
+                  style={{ color: "#fff", fontWeight: 800, fontSize: hp(2) }}
+                >
+                  {addFriendText}
+                </Text>
+              </TouchableOpacity>
+            }
+          </View>
+        </View>
+      </CustomKeyboardAdvoidingView>
+    );
+  }
+  // received a add friend request 
+  if (isReceivedFriendRequestStatus) {
+    return (
+      <CustomKeyboardAdvoidingView>
+        <StatusBar style="dark" />
+        <ProfileHeader />
+        <View
+          className="flex-1 gap-10 bg-white"
+          style={{ paddingTop: hp(2), paddingHorizontal: wp(5) }}
+        >
+          <View className="items-center">
+            <Image
+              style={{ height: hp(20), aspectRatio: 1, borderRadius: 100 }}
+              source={{ uri: sentUser?.profileUrl }}
+            />
+            <Text style={{ fontSize: hp(4), fontWeight: 700, paddingTop: 10 }}>
+              {sentUser?.username}
+            </Text>
+          </View>
+          {/* button */}
+          <View>
+            {
+              <TouchableOpacity
+                style={styles.updateBtn}
+                onPress={() => {
+                  acceptFriendRequest(user?.userId, sentUser?.userId);
                 }}
                 disabled={acceptFriendText == "Accepted"}
               >
@@ -374,10 +439,10 @@ const Profile = () => {
         <View className="items-center">
           <Image
             style={{ height: hp(20), aspectRatio: 1, borderRadius: 100 }}
-            source={{ uri: sendedUser?.profileUrl }}
+            source={{ uri: sentUser?.profileUrl }}
           />
           <Text style={{ fontSize: hp(4), fontWeight: 700, paddingTop: 10 }}>
-            {sendedUser?.username}
+            {sentUser?.username}
           </Text>
         </View>
         {/* button */}
@@ -386,9 +451,9 @@ const Profile = () => {
             <TouchableOpacity
               style={styles.updateBtn}
               onPress={() => {
-                sendFriendRequest(user?.userId, sendedUser?.userId);
+                sendFriendRequest(user?.userId, sentUser?.userId);
               }}
-              disabled={addFriendText == "Sended request"}
+              disabled={addFriendText == "sent request"}
             >
               <Text style={{ color: "#fff", fontWeight: 800, fontSize: hp(2) }}>
                 {addFriendText}
