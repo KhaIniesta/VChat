@@ -8,6 +8,7 @@ import {
   } from "react-native-responsive-screen";
 import { Image } from 'expo-image';
 import { tintColorLight } from '../constants/Colors';
+import profilePlaceholder from '../constants/imagePlaceholder';
 
 const ChatRoomHeader = ({user, router}) => {
     return (
@@ -22,6 +23,7 @@ const ChatRoomHeader = ({user, router}) => {
                         </Pressable>
                         <View className="flex-row items-center gap-3">
                             <Image 
+                                placeholder={profilePlaceholder}
                                 source={user?.profileUrl}
                                 style={{height: hp(5), aspectRatio: 1, borderRadius: 100}}
                             />

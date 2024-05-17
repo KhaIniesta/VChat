@@ -8,6 +8,7 @@ import { Image } from 'expo-image'
 import { blurhash, formatDate, getRoomId } from "../utils/common";
 import { collection, doc, onSnapshot, orderBy, query } from "firebase/firestore";
 import { db } from "../firebaseConfig";
+import profilePlaceholder from "../constants/imagePlaceholder";
 
 const ChatItem = ({ item, router, noBorder, currentUser }) => {
   const [lastMessage, setLastMessage] = useState(undefined)
@@ -58,7 +59,7 @@ const ChatItem = ({ item, router, noBorder, currentUser }) => {
       <Image 
         style={{ height: hp(6), width: hp(6), borderRadius: 100}}
         source={item?.profileUrl}
-        placeholder={blurhash}
+        placeholder={profilePlaceholder}
         transition={500}
       />
 

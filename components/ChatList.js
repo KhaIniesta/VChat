@@ -1,14 +1,28 @@
-import { View, Text, FlatList } from "react-native";
-import React from "react";
+import { View, Text, FlatList, RefreshControl } from "react-native";
+import React, { useState } from "react";
 import ChatItem from "./ChatItem";
 import { useRouter } from "expo-router";
+import { ScrollView } from "react-native-gesture-handler";
 
 const ChatList = ({users, currentUser}) => {
   const router = useRouter()
+  const [refreshing, setRefreshing] = useState(false);
+
+
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000);
+  }, []);
+  
   return (
     <View className="flex-1 ">
       <FlatList
         data={users}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>
+        }
         contentContainerStyle={{ flex: 1, paddingVertical: 25 }}
         keyExtractor={(item) => Math.random()}
         showsVerticalScrollIndicator={false}

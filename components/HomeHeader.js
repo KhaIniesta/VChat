@@ -17,6 +17,7 @@ import { MenuItem } from "./CustomMenuItem";
 import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
 import { tintColorLight } from "../constants/Colors";
 import { router } from "expo-router";
+import profilePlaceholder from "../constants/imagePlaceholder";
 
 export const HomeHeader = () => {
   const { user, logout } = useAuth();
@@ -40,10 +41,10 @@ export const HomeHeader = () => {
       </View>
       <View>
         <Menu>
-          <MenuTrigger>
+          <MenuTrigger >
             <Image
               style={{ height: hp(5), aspectRatio: 1, borderRadius: 100 }}
-              placeholder={{ blurhash }}
+              placeholder={profilePlaceholder}
               source={user?.profileUrl}
               transition={500}
             />

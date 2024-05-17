@@ -57,8 +57,8 @@ const ChatRoom = () => {
   }, [item]);
 
   const updateScrollView = () => {
-    setTimeout(() => {
       scrollViewRef?.current.scrollToEnd({animated: true})
+    setTimeout(() => {
     }, 100);
   }
 
