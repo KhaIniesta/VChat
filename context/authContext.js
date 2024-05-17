@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import {createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword, signOut, updateProfile as firebaseUpdateProfile} from "firebase/auth"
+import {createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword, signOut, updateProfile as firebaseUpdateProfile, getAuth, reauthenticateWithCredential, updatePassword, EmailAuthProvider} from "firebase/auth"
 import {auth, db} from "../firebaseConfig"
 import {doc, setDoc, getDoc} from "firebase/firestore"
 
@@ -101,8 +101,28 @@ export const AuthContextProvider = ({children}) => {
         }
     };
 
+    const updatePasswordForUser = async (currentPassword, newPassword) => {
+        const currentUser = auth.currentUser;
+        if (currentUser) {
+            // Xác thực lại người dùng
+            const credential = EmailAuthProvider.credential(currentUser.email, currentPassword);
+            try {
+                await reauthenticateWithCredential(currentUser, credential);
+                // Cập nhật mật khẩu
+                await updatePassword(currentUser, newPassword);
+                console.log('Password updated successfully');
+                return { success: true };
+            } catch (error) {
+                console.error('Error updating password:', error);
+                return { success: false, message: error.message };
+            }
+        } else {
+            return { success: false, message: 'No user is signed in' };
+        }
+    };
+
     return (
-        <AuthContext.Provider value={{user, isAuthenticated, login, register, logout, updateProfile}}>{children}</AuthContext.Provider>
+        <AuthContext.Provider value={{user, isAuthenticated, login, register, logout, updateProfile, updatePasswordForUser}}>{children}</AuthContext.Provider>
     );
 }
 

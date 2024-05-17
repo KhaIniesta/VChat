@@ -24,7 +24,7 @@ import { useAuth } from "../../context/authContext";
 import ProfileHeader from "../../components/ProfileHeader";
 
 const Profile = () => {
-  const { user } = useAuth(); // logged user
+  const { user, updatePasswordForUser, logout } = useAuth(); // logged user
   const sendedUser = useLocalSearchParams(); // second user
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -32,28 +32,58 @@ const Profile = () => {
 
   const emailRef = useRef("");
   const passwordRef = useRef("");
+  const newPasswordRef = useRef("");
   const usernameRef = useRef("");
   const profileUrlRef = useRef("");
 
   const handleUpdate = async () => {
-    if (!emailRef.current || !passwordRef.current || !usernameRef.current) {
-      Alert.alert("Sign up", "Please fill all the required fields!");
+    // if (!emailRef.current || !passwordRef.current || !usernameRef.current) {
+    //   Alert.alert("Sign up", "Please fill all the required fields!");
+    //   return;
+    // }
+
+    // setLoading(true);
+    // let response = await register(
+    //   emailRef.current,
+    //   passwordRef.current,
+    //   usernameRef.current,
+    //   profileUrlRef.current
+    // );
+    // setLoading(false);
+    // console.log("got result: ", response);
+    // if (!response.success) {
+    //   Alert.alert("Sign Up", response.msg);
+    // }
+    handleUpdatePassword()
+  };
+
+  const handleUpdatePassword = async () => {
+    if (!passwordRef.current || !newPasswordRef.current) {
+      Alert.alert('Password:', 'Please fill all the required fields!');
       return;
     }
-
-    setLoading(true);
-    let response = await register(
-      emailRef.current,
-      passwordRef.current,
-      usernameRef.current,
-      profileUrlRef.current
+    setLoading(true)
+    let response = await updatePasswordForUser(passwordRef.current, newPasswordRef.current)
+    setLoading(false)
+    if (response.success) {
+      Alert.alert(
+        "Password",
+        "Update password success!",
+        [
+            {
+                text: "OK",
+                onPress: async () => {
+                    await logout();
+                }
+            }
+        ],
+        { cancelable: false }
     );
-    setLoading(false);
-    console.log("got result: ", response);
-    if (!response.success) {
-      Alert.alert("Sign Up", response.msg);
     }
-  };
+    else {
+      Alert.alert("Update password fail!")
+    }
+  }
 
   //    Return  //////////////////////////////////////////////////////////////////////////////////
   // My profile
@@ -73,7 +103,7 @@ const Profile = () => {
               source={require("../../assets/images/avt_messi.jpg")}
             />
             <Text style={{ fontSize: hp(4), fontWeight: 700, paddingTop: 10 }}>
-              minhkha27
+              {user?.username}
             </Text>
           </View>
           <View className="gap-8 items-center">
@@ -119,10 +149,10 @@ const Profile = () => {
                 color="gray"
               />
               <TextInput
-                onChangeText={(value) => (passwordRef.current = value)}
+                onChangeText={(value) => (newPasswordRef.current = value)}
                 style={{ fontSize: hp(2), marginLeft: 8 }}
                 className="flex-1 font-semibold text-neutral-700"
-                placeholder="Re-type password"
+                placeholder="New password"
                 secureTextEntry
                 placeholderTextColor={"gray"}
               />
