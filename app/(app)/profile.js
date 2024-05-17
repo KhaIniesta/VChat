@@ -22,6 +22,8 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import CustomKeyboardAdvoidingView from "../../components/CustomKeyboardAvoidingView";
 import { useAuth } from "../../context/authContext";
 import ProfileHeader from "../../components/ProfileHeader";
+import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, query, where, writeBatch } from "firebase/firestore";
+import { db } from "../../firebaseConfig";
 
 const Profile = () => {
   const { user, updatePasswordForUser, logout, updateUserNameAndProfileUrl } =
@@ -76,6 +78,78 @@ const Profile = () => {
       Alert.alert("Update Username and profileUrl fail!");
     }
   };
+
+  const [addFriendText, setAddFriendText] = useState("Add friend");
+  const sendFriendRequest = async (userId, userReqId) => {
+    try {
+      const userRef = doc(db, 'users', userReqId);
+      const reqFriendsRef = collection(userRef, "reqFriends")
+      const newReqFriend = await addDoc(reqFriendsRef, {
+        userReqId: userId
+      });
+      setAddFriendText("Sended request")
+      console.log("Friend request sent successfully", newReqFriend.id);
+    } catch (e) {
+      console.error("Error sending friend request: ", e);
+    }
+  };
+
+  const [isFriendUseState, setIsFriendUseState] = useState(false)
+  const isFriend = async (userId, friendId) => {
+    try {
+      const q = query(collection(db, `users/${userId}/friends`), where("userId", "==", friendId));
+      const querySnapshot = await getDocs(q);
+      if (!querySnapshot.empty) {
+        querySnapshot.forEach(doc => {
+          console.log("Data: ", doc.data());
+        });
+        setIsFriendUseState(true)
+      } 
+    } catch (e) {
+      console.error("Error checking is friend: ", e);
+    }
+  };
+
+  const [isFriendRequestPendingState, setIsFriendRequestPendingState] = useState(false)
+  const isFriendRequestPending = async (userId, friendId) => {
+    try {
+      const q = query(collection(db, `users/${userId}/reqFriends`), where("userReqId", "==", friendId));
+      const querySnapshot = await getDocs(q);
+      if (!querySnapshot.empty) {
+        setIsFriendRequestPendingState(true)
+      } 
+    } catch (e) {
+      console.error("Error checking friend request: ", e);
+    }
+  };
+
+  const [acceptFriendText, setAcceptFriendText] = useState("Accept");
+  const acceptFriendRequest = async (userId, friendId) => {
+    try {
+      // Tạo batch để thực hiện các thay đổi cùng lúc
+      const batch = writeBatch(db);
+      // Thêm bạn vào sub-collection 'friends' của cả hai user
+      const userFriendDocRef = doc(db, `users/${userId}/friends/${friendId}`);
+      const friendUserDocRef = doc(db, `users/${friendId}/friends/${userId}`);
+      batch.set(userFriendDocRef, { userId: friendId });
+      batch.set(friendUserDocRef, { userId: userId });
+  
+      // Xóa yêu cầu kết bạn từ sub-collection 'reqFriends' của cả hai user
+      const q = query(collection(db, `users/${userId}/reqFriends`), where("userReqId", "==", friendId));
+      const querySnapshot = await getDocs(q);
+      querySnapshot.forEach(async (doc) => {
+        await deleteDoc(doc.ref);
+      });
+
+      // Thực hiện batch
+      await batch.commit();
+      setAcceptFriendText("Accepted")
+      console.log("Friend request accepted successfully");
+    } catch (e) {
+      console.error("Error accepting friend request: ", e);
+    }
+  };
+
 
   //    Return  //////////////////////////////////////////////////////////////////////////////////
   // My profile
@@ -166,12 +240,123 @@ const Profile = () => {
       </CustomKeyboardAdvoidingView>
     );
   }
+  isFriend(user?.userId, sendedUser?.userId)
+  isFriendRequestPending(user?.userId, sendedUser?.userId)
   // A friend profile(has send message button)
-  else if (false) {
+  if (isFriendUseState) {
+    return (
+      <CustomKeyboardAdvoidingView>
+        <StatusBar style="dark" />
+        <ProfileHeader />
+        <View
+          className="flex-1 gap-10 bg-white"
+          style={{ paddingTop: hp(2), paddingHorizontal: wp(5) }}
+        >
+          <View className="items-center">
+            <Image
+              style={{ height: hp(20), aspectRatio: 1, borderRadius: 100 }}
+              source={{ uri: sendedUser?.profileUrl }}
+            />
+            <Text style={{ fontSize: hp(4), fontWeight: 700, paddingTop: 10 }}>
+              {sendedUser?.username}
+            </Text>
+          </View>
+          {/* button */}
+          <View>
+            {
+              <TouchableOpacity
+                style={styles.updateBtn}
+                onPress={() => {
+                  router.push({
+                    pathname: "/(app)/chatRoom",
+                    params: sendedUser,
+                  });
+                }}
+              >
+                <Text style={{ color: "#fff", fontWeight: 800, fontSize: hp(2) }}>
+                  Send messages
+                </Text>
+              </TouchableOpacity>
+            }
+          </View>
+        </View>
+      </CustomKeyboardAdvoidingView>
+    )
+  } 
+
+  // Is request add friend:
+  if (isFriendRequestPendingState) {
+    return (
+      <CustomKeyboardAdvoidingView>
+        <StatusBar style="dark" />
+        <ProfileHeader />
+        <View
+          className="flex-1 gap-10 bg-white"
+          style={{ paddingTop: hp(2), paddingHorizontal: wp(5) }}
+        >
+          <View className="items-center">
+            <Image
+              style={{ height: hp(20), aspectRatio: 1, borderRadius: 100 }}
+              source={{ uri: sendedUser?.profileUrl }}
+            />
+            <Text style={{ fontSize: hp(4), fontWeight: 700, paddingTop: 10 }}>
+              {sendedUser?.username}
+            </Text>
+          </View>
+          {/* button */}
+          <View>
+            {
+              <TouchableOpacity
+                style={styles.updateBtn}
+                onPress={() => {acceptFriendRequest(user?.userId, sendedUser?.userId)}}
+                disabled={acceptFriendText=="Accepted"}
+              >
+                <Text style={{ color: "#fff", fontWeight: 800, fontSize: hp(2) }}>
+                  {acceptFriendText}
+                </Text>
+              </TouchableOpacity>
+            }
+          </View>
+        </View>
+      </CustomKeyboardAdvoidingView>
+    )
   }
-  // A stranger profile(has Add friend button)
-  else {
-  }
+  // Stranger:
+  return (
+    <CustomKeyboardAdvoidingView>
+      <StatusBar style="dark" />
+      <ProfileHeader />
+      <View
+        className="flex-1 gap-10 bg-white"
+        style={{ paddingTop: hp(2), paddingHorizontal: wp(5) }}
+      >
+        <View className="items-center">
+          <Image
+            style={{ height: hp(20), aspectRatio: 1, borderRadius: 100 }}
+            source={{ uri: sendedUser?.profileUrl }}
+          />
+          <Text style={{ fontSize: hp(4), fontWeight: 700, paddingTop: 10 }}>
+            {sendedUser?.username}
+          </Text>
+        </View>
+        {/* button */}
+        <View>
+          {
+            <TouchableOpacity
+              style={styles.updateBtn}
+              onPress={() => {sendFriendRequest(user?.userId, sendedUser?.userId)}}
+              disabled={addFriendText == "Sended request"}
+            >
+              <Text style={{ color: "#fff", fontWeight: 800, fontSize: hp(2) }}>
+              {addFriendText}
+              </Text>
+            </TouchableOpacity>
+          }
+        </View>
+      </View>
+    </CustomKeyboardAdvoidingView>
+  )
+
 };
 
 const styles = StyleSheet.create({
