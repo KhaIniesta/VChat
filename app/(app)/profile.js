@@ -22,7 +22,17 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import CustomKeyboardAdvoidingView from "../../components/CustomKeyboardAvoidingView";
 import { useAuth } from "../../context/authContext";
 import ProfileHeader from "../../components/ProfileHeader";
-import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, query, where, writeBatch } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  where,
+  writeBatch,
+} from "firebase/firestore";
 import { db } from "../../firebaseConfig";
 
 const Profile = () => {
@@ -82,44 +92,50 @@ const Profile = () => {
   const [addFriendText, setAddFriendText] = useState("Add friend");
   const sendFriendRequest = async (userId, userReqId) => {
     try {
-      const userRef = doc(db, 'users', userReqId);
-      const reqFriendsRef = collection(userRef, "reqFriends")
+      const userRef = doc(db, "users", userReqId);
+      const reqFriendsRef = collection(userRef, "reqFriends");
       const newReqFriend = await addDoc(reqFriendsRef, {
-        userReqId: userId
+        userReqId: userId,
       });
-      setAddFriendText("Sended request")
+      setAddFriendText("Sended request");
       console.log("Friend request sent successfully", newReqFriend.id);
     } catch (e) {
       console.error("Error sending friend request: ", e);
     }
   };
 
-  const isFriend = async(userId, friendId) => {
+  const isFriend = async (userId, friendId) => {
     try {
-      const q = query(collection(db, `users/${userId}/friends`), where("userId", "==", friendId));
+      const q = query(
+        collection(db, `users/${userId}/friends`),
+        where("userId", "==", friendId)
+      );
       const querySnapshot = await getDocs(q);
       if (!querySnapshot.empty) {
-        console.log("Da ket ban")
-        return true
-      } 
+        console.log("Da ket ban");
+        return true;
+      }
     } catch (e) {
       console.error("Error checking is friend: ", e);
     }
-    console.log("Chua ket ban")
-    return false
+    console.log("Chua ket ban");
+    return false;
   };
 
   const isFriendRequestPending = async (userId, friendId) => {
     try {
-      const q = query(collection(db, `users/${userId}/reqFriends`), where("userReqId", "==", friendId));
+      const q = query(
+        collection(db, `users/${userId}/reqFriends`),
+        where("userReqId", "==", friendId)
+      );
       const querySnapshot = await getDocs(q);
       if (!querySnapshot.empty) {
-        return true
-      } 
+        return true;
+      }
     } catch (e) {
       console.error("Error checking friend request: ", e);
     }
-    return false
+    return false;
   };
 
   const [acceptFriendText, setAcceptFriendText] = useState("Accept");
@@ -132,9 +148,12 @@ const Profile = () => {
       const friendUserDocRef = doc(db, `users/${friendId}/friends/${userId}`);
       batch.set(userFriendDocRef, { userId: friendId });
       batch.set(friendUserDocRef, { userId: userId });
-  
+
       // Xóa yêu cầu kết bạn từ sub-collection 'reqFriends' của cả hai user
-      const q = query(collection(db, `users/${userId}/reqFriends`), where("userReqId", "==", friendId));
+      const q = query(
+        collection(db, `users/${userId}/reqFriends`),
+        where("userReqId", "==", friendId)
+      );
       const querySnapshot = await getDocs(q);
       querySnapshot.forEach(async (doc) => {
         await deleteDoc(doc.ref);
@@ -142,16 +161,35 @@ const Profile = () => {
 
       // Thực hiện batch
       await batch.commit();
-      setAcceptFriendText("Accepted")
+      setAcceptFriendText("Accepted");
       console.log("Friend request accepted successfully");
     } catch (e) {
       console.error("Error accepting friend request: ", e);
     }
   };
-
-
   //    Return  //////////////////////////////////////////////////////////////////////////////////
   // My profile
+  const [isFriendStatus, setIsFriendStatus] = useState(false);
+  const [isFriendRequestPendingStatus, setIsFriendRequestPendingStatus] =
+    useState(false);
+
+  useEffect(() => {
+    const checkFriendship = async () => {
+      const friendStatus = await isFriend(user?.userId, sendedUser?.userId);
+      setIsFriendStatus(friendStatus);
+    };
+    const checkFriendRequest = async () => {
+      const friendRequestStatus = await isFriendRequestPending(
+        user?.userId,
+        sendedUser?.userId
+      );
+      setIsFriendRequestPendingStatus(friendRequestStatus);
+    };
+
+    checkFriendship();
+    checkFriendRequest();
+  }, [user?.userId, sendedUser?.userId]);
+
   if (user?.userId == sendedUser?.userId) {
     usernameRef.current = user?.username;
     profileUrlRef.current = user?.profileUrl;
@@ -240,7 +278,7 @@ const Profile = () => {
     );
   }
   // A friend profile(has send message button)
-  if (isFriend(user?.userId, sendedUser?.userId)) {
+  if (isFriendStatus) {
     return (
       <CustomKeyboardAdvoidingView>
         <StatusBar style="dark" />
@@ -270,7 +308,9 @@ const Profile = () => {
                   });
                 }}
               >
-                <Text style={{ color: "#fff", fontWeight: 800, fontSize: hp(2) }}>
+                <Text
+                  style={{ color: "#fff", fontWeight: 800, fontSize: hp(2) }}
+                >
                   Send messages
                 </Text>
               </TouchableOpacity>
@@ -278,11 +318,11 @@ const Profile = () => {
           </View>
         </View>
       </CustomKeyboardAdvoidingView>
-    )
-  } 
+    );
+  }
 
   // Is request add friend:
-  if (isFriendRequestPending(user?.userId, sendedUser?.userId)) {
+  if (isFriendRequestPendingStatus) {
     return (
       <CustomKeyboardAdvoidingView>
         <StatusBar style="dark" />
@@ -305,10 +345,14 @@ const Profile = () => {
             {
               <TouchableOpacity
                 style={styles.updateBtn}
-                onPress={() => {acceptFriendRequest(user?.userId, sendedUser?.userId)}}
-                disabled={acceptFriendText=="Accepted"}
+                onPress={() => {
+                  acceptFriendRequest(user?.userId, sendedUser?.userId);
+                }}
+                disabled={acceptFriendText == "Accepted"}
               >
-                <Text style={{ color: "#fff", fontWeight: 800, fontSize: hp(2) }}>
+                <Text
+                  style={{ color: "#fff", fontWeight: 800, fontSize: hp(2) }}
+                >
                   {acceptFriendText}
                 </Text>
               </TouchableOpacity>
@@ -316,7 +360,7 @@ const Profile = () => {
           </View>
         </View>
       </CustomKeyboardAdvoidingView>
-    )
+    );
   }
   // Stranger:
   return (
@@ -341,19 +385,20 @@ const Profile = () => {
           {
             <TouchableOpacity
               style={styles.updateBtn}
-              onPress={() => {sendFriendRequest(user?.userId, sendedUser?.userId)}}
+              onPress={() => {
+                sendFriendRequest(user?.userId, sendedUser?.userId);
+              }}
               disabled={addFriendText == "Sended request"}
             >
               <Text style={{ color: "#fff", fontWeight: 800, fontSize: hp(2) }}>
-              {addFriendText}
+                {addFriendText}
               </Text>
             </TouchableOpacity>
           }
         </View>
       </View>
     </CustomKeyboardAdvoidingView>
-  )
-
+  );
 };
 
 const styles = StyleSheet.create({
