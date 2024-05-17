@@ -96,7 +96,7 @@ const Profile = () => {
       const newReqFriend = await addDoc(reqFriendsRef, {
         userReqId: userId,
       });
-      setAddFriendText("sent request");
+      setAddFriendText("Sent request");
       console.log("Friend request sent successfully", newReqFriend.id);
     } catch (e) {
       console.error("Error sending friend request: ", e);
@@ -191,6 +191,7 @@ const Profile = () => {
 
 
   useEffect(() => {
+    setAddFriendText("Add friend")
     const checkFriendship = async () => {
       const friendStatus = await isFriend(user?.userId, sentUser?.userId);
       setIsFriendStatus(friendStatus);
@@ -453,7 +454,7 @@ const Profile = () => {
               onPress={() => {
                 sendFriendRequest(user?.userId, sentUser?.userId);
               }}
-              disabled={addFriendText == "sent request"}
+              disabled={addFriendText == "Sent request"}
             >
               <Text style={{ color: "#fff", fontWeight: 800, fontSize: hp(2) }}>
                 {addFriendText}
