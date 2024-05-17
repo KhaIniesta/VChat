@@ -9,6 +9,7 @@ import { blurhash, formatDate, getRoomId } from "../utils/common";
 import { collection, doc, onSnapshot, orderBy, query } from "firebase/firestore";
 import { db } from "../firebaseConfig";
 import { tintColorLight } from "../constants/Colors";
+import profilePlaceholder from "../constants/imagePlaceholder";
 
 const SearchItem = ({ user, router, noBorder}) => {
 
@@ -22,7 +23,7 @@ const SearchItem = ({ user, router, noBorder}) => {
       <Image 
         style={{ height: hp(6), width: hp(6), borderRadius: 100}}
         source={user?.profileUrl}
-        placeholder={blurhash}
+        placeholder={profilePlaceholder}
         transition={500}
       />
 

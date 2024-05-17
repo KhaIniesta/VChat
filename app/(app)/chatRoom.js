@@ -34,6 +34,7 @@ const ChatRoom = () => {
   useEffect(() => {
     createRoomIfNotExists();
 
+    setMessages([])
     let roomId = getRoomId(user?.userId, item?.userId);
     const docRef = doc(db, "rooms", roomId)
     const messagesRef = collection(docRef, "messages")
