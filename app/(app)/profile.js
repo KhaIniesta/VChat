@@ -24,7 +24,8 @@ import { useAuth } from "../../context/authContext";
 import ProfileHeader from "../../components/ProfileHeader";
 
 const Profile = () => {
-  const { user, updatePasswordForUser, logout } = useAuth(); // logged user
+  const { user, updatePasswordForUser, logout, updateUserNameAndProfileUrl } =
+    useAuth(); // logged user
   const sendedUser = useLocalSearchParams(); // second user
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -37,58 +38,81 @@ const Profile = () => {
   const profileUrlRef = useRef("");
 
   const handleUpdate = async () => {
-    // if (!emailRef.current || !passwordRef.current || !usernameRef.current) {
-    //   Alert.alert("Sign up", "Please fill all the required fields!");
-    //   return;
-    // }
+    handleUpdateUsernameAndProfileUrl();
+    // handleUpdatePassword()
+  };
 
-    // setLoading(true);
-    // let response = await register(
-    //   emailRef.current,
-    //   passwordRef.current,
-    //   usernameRef.current,
-    //   profileUrlRef.current
-    // );
-    // setLoading(false);
-    // console.log("got result: ", response);
-    // if (!response.success) {
-    //   Alert.alert("Sign Up", response.msg);
-    // }
-    handleUpdatePassword()
+  const handleUpdateUsernameAndProfileUrl = async () => {
+    if (!usernameRef.current) {
+      Alert.alert("Username:", "Please fill username!");
+      return;
+    }
+    if (!profileUrlRef.current) {
+      Alert.alert("Username:", "Please fill profileUrl!");
+      return;
+    }
+    setLoading(true);
+    let response = await updateUserNameAndProfileUrl(
+      user?.userId,
+      usernameRef.current,
+      profileUrlRef.current
+    );
+    setLoading(false);
+    if (response.success) {
+      Alert.alert(
+        "Username and profileUrl",
+        "Update Username and profileUrl success!",
+        [
+          {
+            text: "OK",
+            onPress: async () => {
+              await logout();
+            },
+          },
+        ],
+        { cancelable: false }
+      );
+    } else {
+      Alert.alert("Update Username and profileUrl fail!");
+    }
   };
 
   const handleUpdatePassword = async () => {
     if (!passwordRef.current || !newPasswordRef.current) {
-      Alert.alert('Password:', 'Please fill all the required fields!');
+      Alert.alert("Password:", "Please fill all the required fields!");
       return;
     }
-    setLoading(true)
-    let response = await updatePasswordForUser(passwordRef.current, newPasswordRef.current)
-    setLoading(false)
+    setLoading(true);
+    let response = await updatePasswordForUser(
+      passwordRef.current,
+      newPasswordRef.current
+    );
+    setLoading(false);
     if (response.success) {
       Alert.alert(
         "Password",
         "Update password success!",
         [
-            {
-                text: "OK",
-                onPress: async () => {
-                    await logout();
-                }
-            }
+          {
+            text: "OK",
+            onPress: async () => {
+              await logout();
+            },
+          },
         ],
         { cancelable: false }
-    );
+      );
+    } else {
+      Alert.alert("Update password fail!");
     }
-    else {
-      Alert.alert("Update password fail!")
-    }
-  }
+  };
 
   //    Return  //////////////////////////////////////////////////////////////////////////////////
   // My profile
   if (user?.userId == sendedUser?.userId) {
-    console.log(`Check user's profile\nMy id: ${user?.userId},\nSendedUser's id: ${sendedUser?.userId}`)
+    usernameRef.current = user?.username;
+    profileUrlRef.current = user?.profileUrl;
+
     return (
       <CustomKeyboardAdvoidingView>
         <StatusBar style="dark" />
@@ -100,7 +124,7 @@ const Profile = () => {
           <View className="items-center">
             <Image
               style={{ height: hp(20), aspectRatio: 1, borderRadius: 100 }}
-              source={require("../../assets/images/avt_messi.jpg")}
+              source={{ uri: user?.profileUrl }}
             />
             <Text style={{ fontSize: hp(4), fontWeight: 700, paddingTop: 10 }}>
               {user?.username}
@@ -123,40 +147,6 @@ const Profile = () => {
                 placeholderTextColor={"gray"}
               />
             </View>
-            {/* password */}
-            <View style={styles.textInput}>
-              <Octicons
-                style={{ marginLeft: 8 }}
-                name="lock"
-                size={hp(2.7)}
-                color="gray"
-              />
-              <TextInput
-                onChangeText={(value) => (passwordRef.current = value)}
-                style={{ fontSize: hp(2), marginLeft: 8 }}
-                className="flex-1 font-semibold text-neutral-700"
-                placeholder="Password"
-                secureTextEntry
-                placeholderTextColor={"gray"}
-              />
-            </View>
-            {/* re-type password */}
-            <View style={styles.textInput}>
-              <Octicons
-                style={{ marginLeft: 8 }}
-                name="lock"
-                size={hp(2.7)}
-                color="gray"
-              />
-              <TextInput
-                onChangeText={(value) => (newPasswordRef.current = value)}
-                style={{ fontSize: hp(2), marginLeft: 8 }}
-                className="flex-1 font-semibold text-neutral-700"
-                placeholder="New password"
-                secureTextEntry
-                placeholderTextColor={"gray"}
-              />
-            </View>
             <View style={styles.textInput}>
               <Feather
                 style={{ marginLeft: 8 }}
@@ -176,7 +166,24 @@ const Profile = () => {
           {/* button */}
           <View>
             {
-              <TouchableOpacity style={styles.signInBtn} onPress={handleUpdate}>
+              <TouchableOpacity
+                style={styles.changePasswordBtn}
+                onPress={() => {
+                  router.push("/(app)/changePassword");
+                }}
+              >
+                <Text
+                  className="font-medium text-neutral-500"
+                  // style={{ color: "#fff", fontWeight: 800, fontSize: hp(2) }}
+                >
+                  Change Password
+                </Text>
+              </TouchableOpacity>
+            }
+          </View>
+          <View>
+            {
+              <TouchableOpacity style={styles.updateBtn} onPress={handleUpdate}>
                 <Text
                   style={{ color: "#fff", fontWeight: 800, fontSize: hp(2) }}
                 >
@@ -207,9 +214,16 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderRadius: 8,
   },
-  signInBtn: {
+  updateBtn: {
     borderRadius: 12,
     backgroundColor: tintColorLight,
+    height: hp(6),
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  changePasswordBtn: {
+    borderRadius: 12,
+    backgroundColor: "#F1F5F9",
     height: hp(6),
     justifyContent: "center",
     alignItems: "center",

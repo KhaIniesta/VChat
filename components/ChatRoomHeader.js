@@ -32,7 +32,7 @@ const ChatRoomHeader = ({user, router}) => {
                     </View>
                 ),
                 headerRight: () => (
-                    <View className="flex-row items-center gap-8">
+                    <View className="flex-row items-center gap-8 p-3">
                         <Ionicons name='call' size={hp(3)} color={tintColorLight} />
                         <FontAwesome5 name='info-circle' size={hp(3)} color={tintColorLight} />
                     </View>

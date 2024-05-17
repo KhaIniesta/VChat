@@ -39,7 +39,12 @@ const _layout = () => {
           href : null,
         }}
       />
-      
+      <Tabs.Screen 
+        name='changePassword'
+        options={{
+          href : null,
+        }}
+      />
     </Tabs>
   )
 }
