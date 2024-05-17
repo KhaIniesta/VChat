@@ -77,36 +77,6 @@ const Profile = () => {
     }
   };
 
-  const handleUpdatePassword = async () => {
-    if (!passwordRef.current || !newPasswordRef.current) {
-      Alert.alert("Password:", "Please fill all the required fields!");
-      return;
-    }
-    setLoading(true);
-    let response = await updatePasswordForUser(
-      passwordRef.current,
-      newPasswordRef.current
-    );
-    setLoading(false);
-    if (response.success) {
-      Alert.alert(
-        "Password",
-        "Update password success!",
-        [
-          {
-            text: "OK",
-            onPress: async () => {
-              await logout();
-            },
-          },
-        ],
-        { cancelable: false }
-      );
-    } else {
-      Alert.alert("Update password fail!");
-    }
-  };
-
   //    Return  //////////////////////////////////////////////////////////////////////////////////
   // My profile
   if (user?.userId == sendedUser?.userId) {

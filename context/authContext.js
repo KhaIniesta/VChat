@@ -82,6 +82,21 @@ export const AuthContextProvider = ({ children }) => {
 
   const register = async (email, password, username, profileUrl) => {
     try {
+      const usersCollectionRef = collection(db, "users");
+      const q = query(usersCollectionRef, where("username", "==", username));
+      const querySnapshot = await getDocs(q);
+
+      if (!querySnapshot.empty) {
+        let msg = "Username already exists!\nPlease choose another username."
+        return { success: false, msg: msg };
+      }
+    }
+    catch(e) {
+      console.error("Error register: ", e);
+      return { success: false, msg: e.message, error: e };
+    }
+
+    try {
       const response = await createUserWithEmailAndPassword(
         auth,
         email,
@@ -135,33 +150,24 @@ export const AuthContextProvider = ({ children }) => {
       const querySnapshot = await getDocs(q);
 
       if (!querySnapshot.empty) {
-        const doc = querySnapshot.docs[0];
-        const userData = doc.data();
-        const currentUser = auth.currentUser;
-        // Kiểm tra xem username có trùng với username hiện tại hay không, nếu trùng
-        // thì có nghĩa người dùng chỉ muốn cập nhật profileUrl, không cập nhật username,
-        // trường hợp này vẫn chấp nhận
-        if (userData?.username == currentUser?.username) {
-          // Tạo reference tới document của user trong collection users
+        const docc = querySnapshot.docs[0];
+        const userData = docc.data();
+        if (userData?.username == user?.username) {
           const userDocRef = doc(db, "users", userId);
-          // Cập nhật document với các giá trị mới
           await updateDoc(userDocRef, {
             profileUrl: newProfileUrl,
             username: newUsername,
           });
-
+  
           console.log("User profile updated successfully");
           return { success: true };
         }
-        // Nếu có bất kỳ tài liệu nào có username trùng, ngăn việc cập nhật
         if (!querySnapshot.empty) {
-          Alert.alert("Username already exists!");
+          console.log("Username already exists!");
           return { success: false, msg: "Username already exists" };
         }
       } else {
-        // Tạo reference tới document của user trong collection users
         const userDocRef = doc(db, "users", userId);
-        // Cập nhật document với các giá trị mới
         await updateDoc(userDocRef, {
           profileUrl: newProfileUrl,
           username: newUsername,
