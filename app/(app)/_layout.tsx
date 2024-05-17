@@ -6,6 +6,7 @@ import ProfileHeader from '../../components/ProfileHeader'
 import "../../global.css"
 import { FontAwesome, FontAwesome5, MaterialIcons } from '@expo/vector-icons'
 import { tintColorDark, tintColorLight } from '../../constants/Colors'
+
 const _layout = () => {
   return (
     <Tabs screenOptions={{ tabBarActiveTintColor: tintColorLight }}>
@@ -37,6 +38,7 @@ const _layout = () => {
         name='chatRoom'
         options={{
           href : null,
+          tabBarStyle: {display: 'none'}
         }}
       />
       <Tabs.Screen 
