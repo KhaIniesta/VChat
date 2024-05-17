@@ -94,33 +94,32 @@ const Profile = () => {
     }
   };
 
-  const [isFriendUseState, setIsFriendUseState] = useState(false)
-  const isFriend = async (userId, friendId) => {
+  const isFriend = async(userId, friendId) => {
     try {
       const q = query(collection(db, `users/${userId}/friends`), where("userId", "==", friendId));
       const querySnapshot = await getDocs(q);
       if (!querySnapshot.empty) {
-        querySnapshot.forEach(doc => {
-          console.log("Data: ", doc.data());
-        });
-        setIsFriendUseState(true)
+        console.log("Da ket ban")
+        return true
       } 
     } catch (e) {
       console.error("Error checking is friend: ", e);
     }
+    console.log("Chua ket ban")
+    return false
   };
 
-  const [isFriendRequestPendingState, setIsFriendRequestPendingState] = useState(false)
   const isFriendRequestPending = async (userId, friendId) => {
     try {
       const q = query(collection(db, `users/${userId}/reqFriends`), where("userReqId", "==", friendId));
       const querySnapshot = await getDocs(q);
       if (!querySnapshot.empty) {
-        setIsFriendRequestPendingState(true)
+        return true
       } 
     } catch (e) {
       console.error("Error checking friend request: ", e);
     }
+    return false
   };
 
   const [acceptFriendText, setAcceptFriendText] = useState("Accept");
@@ -241,7 +240,7 @@ const Profile = () => {
     );
   }
   // A friend profile(has send message button)
-  if (isFriendUseState) {
+  if (isFriend(user?.userId, sendedUser?.userId)) {
     return (
       <CustomKeyboardAdvoidingView>
         <StatusBar style="dark" />
@@ -283,7 +282,7 @@ const Profile = () => {
   } 
 
   // Is request add friend:
-  if (isFriendRequestPendingState) {
+  if (isFriendRequestPending(user?.userId, sendedUser?.userId)) {
     return (
       <CustomKeyboardAdvoidingView>
         <StatusBar style="dark" />
