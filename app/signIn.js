@@ -37,7 +37,7 @@ const SignIn = () => {
       <StatusBar style='dark'/>
       <View className='flex-1 gap-12' style={{paddingTop: hp(8), paddingHorizontal: wp(5)}}>
         <View className='items-center'>
-          <Image style={{height: hp(25)}} resizeMode='contain' source={require('../assets/images/login-illustration.jpg')}/>
+          <Image style={{height: hp(25)}} resizeMode='contain' source={require('../assets/images/VChatLogo.png')}/>
         </View>
           <View className='gap-10 items-center'>
             <Text style={{fontSize: hp(4), fontWeight: 700}} >Sign In</Text>
