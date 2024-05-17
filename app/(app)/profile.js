@@ -240,8 +240,6 @@ const Profile = () => {
       </CustomKeyboardAdvoidingView>
     );
   }
-  isFriend(user?.userId, sendedUser?.userId)
-  isFriendRequestPending(user?.userId, sendedUser?.userId)
   // A friend profile(has send message button)
   if (isFriendUseState) {
     return (
