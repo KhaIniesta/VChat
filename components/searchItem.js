@@ -11,8 +11,13 @@ import { db } from "../firebaseConfig";
 import { tintColorLight } from "../constants/Colors";
 
 const SearchItem = ({ user, router, noBorder}) => {
+
+  const openProfile = async () => {
+    router.push({pathname: '/profile', params: user});
+  }
+
   return (
-    <Pressable onPress={() => console.log("open profile")} className="flex-row items-center gap-3 mb-4 pb-2 p-2 rounded-lg"
+    <Pressable onPress={openProfile} className="flex-row items-center gap-3 mb-4 pb-2 p-2 rounded-lg"
     style={{backgroundColor: tintColorLight}}>
       <Image 
         style={{ height: hp(6), width: hp(6), borderRadius: 100}}
