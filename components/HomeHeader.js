@@ -15,7 +15,7 @@ import {
 } from "react-native-popup-menu";
 import { MenuItem } from "./CustomMenuItem";
 import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
-import { tintColorDark, tintColorLight } from "../constants/Colors";
+import { tintColorLight } from "../constants/Colors";
 import { router } from "expo-router";
 
 export const HomeHeader = () => {
