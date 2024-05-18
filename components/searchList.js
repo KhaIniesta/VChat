@@ -7,7 +7,7 @@ import {tintColorLight} from '../constants/Colors'
 const SearchList = ({users}) => {
   const router = useRouter()
   return (
-    <View className={`flex-1 w-full p-3 rounded-2xl mt-3 bg-neutral-200`} >
+    <View className={`flex-1 w-full p-3 rounded-2xl mt-3 bg-neutral-100`} >
       <FlatList
         data={users}
         contentContainerStyle={{ flex: 1, paddingVertical: 25 }}

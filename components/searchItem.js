@@ -18,8 +18,8 @@ const SearchItem = ({ user, router, noBorder}) => {
   }
 
   return (
-    <Pressable onPress={openProfile} className="flex-row items-center gap-3 mb-4 pb-2 p-2 rounded-lg"
-    style={{backgroundColor: tintColorLight}}>
+    <Pressable onPress={openProfile} className="flex-row items-center gap-3 mb-4 pb-2 p-2 rounded-xl"
+    style={{backgroundColor: "#ab88f6"}}>
       <Image 
         style={{ height: hp(6), width: hp(6), borderRadius: 100}}
         source={user?.profileUrl}
