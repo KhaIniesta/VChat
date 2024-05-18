@@ -1,13 +1,13 @@
 import {
   View,
   Text,
-  Image,
   TextInput,
   StyleSheet,
   TouchableHighlight,
   Alert,
   ActivityIndicator,
 } from "react-native";
+import { Image } from "expo-image";
 import React, { useEffect, useRef, useState } from "react";
 import {
   widthPercentageToDP as wp,
@@ -22,6 +22,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import CustomKeyboardAdvoidingView from "../../components/CustomKeyboardAvoidingView";
 import { useAuth } from "../../context/authContext";
 import ProfileHeader from "../../components/ProfileHeader";
+import profilePlaceholder from "../../constants/imagePlaceholder";
 
 const ChangePassword = () => {
   const { user, updatePasswordForUser, logout, updateUserNameAndProfileUrl } =
@@ -80,7 +81,8 @@ const ChangePassword = () => {
         <View className="items-center">
           <Image
             style={{ height: hp(20), aspectRatio: 1, borderRadius: 100 }}
-            source={{ uri: user?.profileUrl }}
+            source={user?.profileUrl}
+            placeholder={profilePlaceholder}
           />
           <Text style={{ fontSize: hp(4), fontWeight: 700, paddingTop: 10 }}>
             {user?.username}
