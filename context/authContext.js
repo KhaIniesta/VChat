@@ -133,9 +133,10 @@ export const AuthContextProvider = ({ children }) => {
         await updatePassword(currentUser, newPassword);
         console.log("Password updated successfully");
         return { success: true };
-      } catch (error) {
-        console.error("Error updating password:", error);
-        return { success: false, message: error.message };
+      } catch (e) {
+        let msg = e.message;
+        if (msg.includes("(auth/invalid-credential")) msg = "Wrong password";
+        return { success: false, message: e.message };
       }
     } else {
       return { success: false, message: "No user is signed in" };

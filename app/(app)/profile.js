@@ -1,13 +1,13 @@
 import {
   View,
   Text,
-  Image,
   TextInput,
   StyleSheet,
   TouchableHighlight,
   Alert,
   ActivityIndicator,
 } from "react-native";
+import { Image } from "expo-image";
 import React, { useEffect, useRef, useState } from "react";
 import {
   widthPercentageToDP as wp,
@@ -34,6 +34,7 @@ import {
   writeBatch,
 } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
+import profilePlaceholder from "../../constants/imagePlaceholder";
 
 const Profile = () => {
   const { user, updatePasswordForUser, logout, updateUserNameAndProfileUrl } =
@@ -231,7 +232,8 @@ const Profile = () => {
           <View className="items-center">
             <Image
               style={{ height: hp(20), aspectRatio: 1, borderRadius: 100 }}
-              source={{ uri: user?.profileUrl }}
+              source={user?.profileUrl}
+              placeholder={profilePlaceholder}
             />
             <Text style={{ fontSize: hp(4), fontWeight: 700, paddingTop: 10 }}>
               {user?.username}
@@ -316,7 +318,8 @@ const Profile = () => {
           <View className="items-center">
             <Image
               style={{ height: hp(20), aspectRatio: 1, borderRadius: 100 }}
-              source={{ uri: sentUser?.profileUrl }}
+              source={sentUser?.profileUrl}
+              placeholder={profilePlaceholder}
             />
             <Text style={{ fontSize: hp(4), fontWeight: 700, paddingTop: 10 }}>
               {sentUser?.username}
@@ -359,7 +362,8 @@ const Profile = () => {
           <View className="items-center">
             <Image
               style={{ height: hp(20), aspectRatio: 1, borderRadius: 100 }}
-              source={{ uri: sentUser?.profileUrl }}
+              source={sentUser?.profileUrl}
+              placeholder={profilePlaceholder}
             />
             <Text style={{ fontSize: hp(4), fontWeight: 700, paddingTop: 10 }}>
               {sentUser?.username}
@@ -400,7 +404,8 @@ const Profile = () => {
           <View className="items-center">
             <Image
               style={{ height: hp(20), aspectRatio: 1, borderRadius: 100 }}
-              source={{ uri: sentUser?.profileUrl }}
+              source={sentUser?.profileUrl}
+              placeholder={profilePlaceholder}
             />
             <Text style={{ fontSize: hp(4), fontWeight: 700, paddingTop: 10 }}>
               {sentUser?.username}
@@ -440,7 +445,8 @@ const Profile = () => {
         <View className="items-center">
           <Image
             style={{ height: hp(20), aspectRatio: 1, borderRadius: 100 }}
-            source={{ uri: sentUser?.profileUrl }}
+            source={sentUser?.profileUrl}
+            placeholder={profilePlaceholder}
           />
           <Text style={{ fontSize: hp(4), fontWeight: 700, paddingTop: 10 }}>
             {sentUser?.username}

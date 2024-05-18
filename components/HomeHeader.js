@@ -22,7 +22,6 @@ import profilePlaceholder from "../constants/imagePlaceholder";
 export const HomeHeader = () => {
   const { user, logout } = useAuth();
   const handleProfile = () => {
-    // router.push('/(app)/profile')
     router.push({pathname: '/(app)/profile', params: user})
   }
   const handleLogout = async() => {
