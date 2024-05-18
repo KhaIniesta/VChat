@@ -6,9 +6,10 @@ import firebase from "firebase/compat/app";
 import { collection, doc, getDoc, getDocs, query, where } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
 import { tintColorLight } from "../../constants/Colors";
-
+import { useAuth } from "../../context/authContext";
 
 const Search = () => {
+  const { user } = useAuth();
   const [searchString, setSearchString] = useState("");
   const [users, setUsers] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
@@ -29,9 +30,21 @@ const Search = () => {
     
     setUsers(matchingUsers);
   }
+  const getAllUsers = async() => {
+    const userRef = collection(db, 'users')
+    const q = query(userRef, where('userId', '!=', user?.userId))
+
+    const querySnapshot = await getDocs(q)
+    let data = []
+    querySnapshot.forEach(doc => {
+      data.push({...doc.data()})
+    })
+    setUsers(data)
+  }
 
   useEffect(() => {
-    setUsers([]);
+    // setUsers([]);
+    getAllUsers()
     setIsTyping(true);
 
     const TimeOutId = setTimeout(getUsernamesBySearchString, 500);
