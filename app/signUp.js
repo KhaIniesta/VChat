@@ -17,13 +17,19 @@ const SignUp = () => {
 
   const emailRef = useRef("");
   const passwordRef = useRef("");
+  const retypePasswordRef = useRef("");
   const usernameRef = useRef("");
   const profileUrlRef = useRef("");
 
 
   const handleRegister = async() => {
-    if(!emailRef.current || !passwordRef.current || !usernameRef.current) {
+    if(!emailRef.current || !passwordRef.current || !usernameRef.current || !retypePasswordRef.current) {
       Alert.alert('Sign up', 'Please fill all the required fields!');
+      return;
+    }
+
+    if (passwordRef.current != retypePasswordRef.current) {
+      Alert.alert('Sign up', "Password and confirm not match!")
       return;
     }
 
@@ -77,16 +83,16 @@ const SignUp = () => {
                 placeholderTextColor={'gray'}/>
             </View>
             {/* re-type password */}
-            {/* <View style={styles.textInput} >
+            <View style={styles.textInput} >
               <Octicons style={{marginLeft: 8}} name='lock' size={hp(2.7)} color='gray'/>
               <TextInput
-                onChangeText={value=> passwordRef.current=value}
+                onChangeText={value=> retypePasswordRef.current=value}
                 style={{fontSize: hp(2), marginLeft: 8}}
                 className='flex-1 font-semibold text-neutral-700'
                 placeholder='Re-type password'
                 secureTextEntry
                 placeholderTextColor={'gray'}/>
-            </View> */}
+            </View>
             {/* image */}
             <View style={styles.textInput} >
               <Feather style={{marginLeft: 8}} name='image' size={hp(2.7)} color='gray'/>
@@ -106,20 +112,6 @@ const SignUp = () => {
               </TouchableOpacity>
             }
           </View>
-          {/* <View>
-            {
-              loading? (
-                  <View style={{paddingTop: 20}}>
-                    <ActivityIndicator size='large' color={tintColorLight}></ActivityIndicator>
-                  </View>
-              ):
-              (
-                <TouchableOpacity style={styles.signInBtn} onPress={handleRegister}>
-                  <Text style={{color: '#fff', fontWeight: 800, fontSize: hp(2)}}>Sign up</Text>
-                </TouchableOpacity>
-              )
-            }
-          </View> */}
           <View style={styles.link}>
             <Text style={{color: '#64748b'}}>Already have an account? </Text>
             <TouchableOpacity onPress={()=>{ router.push('/signIn') }}>
