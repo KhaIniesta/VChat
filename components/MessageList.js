@@ -1,5 +1,4 @@
-import { View, Text, ScrollView } from 'react-native'
-import React, { useEffect, useRef } from 'react'
+import { ScrollView } from 'react-native'
 import MessageItem from "./MessageItem"
 
 const MessageList = ({messages, currentUser, scrollViewRef}) => {

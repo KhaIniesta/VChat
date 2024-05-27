@@ -21,7 +21,6 @@ import {
   where,
   collection,
 } from "firebase/firestore";
-import { Alert } from "react-native";
 
 export const AuthContext = createContext();
 
@@ -36,6 +35,7 @@ export const AuthContextProvider = ({ children }) => {
         setIsAuthenticated(true);
         setUser(user);
         updateUserData(user.uid);
+        console.log(`User login, userId: ${user?.uid}`)
       } else {
         setIsAuthenticated(false);
         setUser(null);

@@ -1,39 +1,19 @@
-import { View, Text, Button, Pressable, ActivityIndicator } from 'react-native'
-import React, { useEffect, useState } from 'react'
-import { useAuth } from '../../context/authContext'
+import { View, Pressable, ActivityIndicator } from 'react-native'
+import React, { useState, useCallback  } from 'react'
 import { StatusBar } from 'expo-status-bar';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
 import ChatList from "../../components/ChatList"
-import { collection, doc, getDoc, getDocs, query, where } from 'firebase/firestore';
-import { userRef } from '../../firebaseConfig';
-import { tintColorLight } from '../../constants/Colors';
-import { db } from '../../firebaseConfig';
+import { collection, doc, getDoc, onSnapshot } from 'firebase/firestore';
+import { db, auth } from '../../firebaseConfig';
+import { useFocusEffect } from '@react-navigation/native';
 
 const Home = () => {
-  const { logout, user } = useAuth();
+  const user = auth.currentUser; 
   const [users, setUsers] = useState([]);
-  useEffect(() => {
-    if (user?.uid) {
-      getFriends(user.uid);
-    }
-  }, []);
 
-  const getUsers = async() => {
-    // Fetch users
-    const q = query(userRef, where('userId', '!=', user?.uid))
-
-    const querySnapshot = await getDocs(q)
-    let data = []
-    querySnapshot.forEach(doc => {
-      data.push({...doc.data()})
-    })
-    setUsers(data)
-  }
-
-  // Hàm lấy thông tin chi tiết của một user từ userId
   const getUserById = async (userId) => {
     try {
       const userDocRef = doc(db, "users", userId);
@@ -53,20 +33,30 @@ const Home = () => {
   const getFriends = async (userId) => {
     try {
       const friendsCollectionRef = collection(db, `users/${userId}/friends`);
-      const querySnapshot = await getDocs(friendsCollectionRef);
-      
-      const friends = await Promise.all(querySnapshot.docs.map(async (doc) => {
-        const friendId = doc.id;
-        const friendData = await getUserById(friendId);
-        return friendData;
-      }));
-  
-      setUsers(friends)
+      onSnapshot(friendsCollectionRef, async (querySnapshot) => {
+        const friends = await Promise.all(querySnapshot.docs.map(async (doc) => {
+          const friendId = doc.id;
+          const friendData = await getUserById(friendId);
+          return friendData;
+        }));
+    
+        setUsers(friends);
+      });
     } catch (e) {
       console.error("Error fetching friends: ", e);
-      setUsers([])
+      setUsers([]);
     }
   };
+
+  useFocusEffect(
+    useCallback(() => {
+      if (user?.uid) {
+        console.log(`load users ne hihi`)
+        getFriends(user.uid);
+      }
+    }, [])
+  );
+
 
   return (
     <View className="flex-1 bg-white">

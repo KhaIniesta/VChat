@@ -33,7 +33,6 @@ const ChatRoom = () => {
 
   useEffect(() => {
     createRoomIfNotExists();
-
     setMessages([])
     let roomId = getRoomId(user?.userId, item?.userId);
     const docRef = doc(db, "rooms", roomId)
@@ -56,13 +55,13 @@ const ChatRoom = () => {
       KeyboardDidShowListener.remove()
     }
   }, [item]);
-
+  
   const updateScrollView = () => {
-      scrollViewRef?.current.scrollToEnd({animated: true})
+    scrollViewRef?.current.scrollToEnd({animated: true})
     setTimeout(() => {
     }, 100);
   }
-
+  
   useEffect(() => {
     updateScrollView()
   }, [messages])
@@ -92,9 +91,6 @@ const ChatRoom = () => {
             senderName: user?.username,
             createdAt: Timestamp.fromDate(new Date())
         })
-
-        console.log("New message id: ", newDoc.id)
-
     } catch(error) {
         Alert.alert("Message", error.message)
     }

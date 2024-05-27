@@ -1,8 +1,7 @@
-import { View, Text, FlatList, RefreshControl } from "react-native";
+import { View, FlatList, RefreshControl } from "react-native";
 import React, { useState } from "react";
 import ChatItem from "./ChatItem";
 import { useRouter } from "expo-router";
-import { ScrollView } from "react-native-gesture-handler";
 
 const ChatList = ({users, currentUser}) => {
   const router = useRouter()

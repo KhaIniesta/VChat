@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, Pressable } from "react-native";
+import { View, Text, Pressable } from "react-native";
 import React, { useEffect, useState } from "react";
 import {
   widthPercentageToDP as wp,
@@ -12,19 +12,20 @@ import profilePlaceholder from "../constants/imagePlaceholder";
 
 const ChatItem = ({ item, router, noBorder, currentUser }) => {
   const [lastMessage, setLastMessage] = useState(undefined)
-  useEffect(() => {
 
-    let roomId = getRoomId(currentUser?.userId, item?.userId);
+  useEffect(() => {
+    let roomId = getRoomId(currentUser?.uid, item?.userId);
     const docRef = doc(db, "rooms", roomId)
     const messagesRef = collection(docRef, "messages")
     const q = query(messagesRef, orderBy('createdAt', 'desc'))
 
     let unsub = onSnapshot(q, (snapshot) => {
-        let allMessages = snapshot.docs.map(doc => {
-            return doc.data()
-        })
-        setLastMessage(allMessages[0]? allMessages[0]: null)
+      let allMessages = snapshot.docs.map(doc => {
+          return doc.data()
+      })
+      setLastMessage(allMessages[0]? allMessages[0]: null)
     })
+
   }, []);
 
   const openChatRoom = async() => {
