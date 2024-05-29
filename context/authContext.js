@@ -26,11 +26,12 @@ export const AuthContext = createContext();
 export const AuthContextProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(undefined);
-  const [emailVerified, setEmailVerified] = useState(undefined);
+  const [emailVerified, setEmailVerified] = useState(auth.currentUser?.emailVerified);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async(user) => {
       if (user) {
+        refreshUser()
         setUser(user);
         setIsAuthenticated(true);
         updateUserData(user.uid);
