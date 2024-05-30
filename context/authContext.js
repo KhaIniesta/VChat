@@ -4,11 +4,10 @@ import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
   signOut,
-  updateProfile as firebaseUpdateProfile,
-  getAuth,
   reauthenticateWithCredential,
   updatePassword,
   EmailAuthProvider,
+  sendEmailVerification,
 } from "firebase/auth";
 import { auth, db } from "../firebaseConfig";
 import {
@@ -27,22 +26,30 @@ export const AuthContext = createContext();
 export const AuthContextProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(undefined);
+  const [emailVerified, setEmailVerified] = useState(auth.currentUser?.emailVerified);
 
   useEffect(() => {
-    // On authStateChanged
-    const unsub = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async(user) => {
       if (user) {
-        setIsAuthenticated(true);
+        refreshUser()
         setUser(user);
+        setIsAuthenticated(true);
         updateUserData(user.uid);
-        console.log(`User login, userId: ${user?.uid}`)
       } else {
-        setIsAuthenticated(false);
         setUser(null);
+        setIsAuthenticated(false);
       }
     });
-    return unsub;
+
+    return () => unsubscribe();
   }, []);
+
+  const refreshUser = async () => {
+    if (auth.currentUser) {
+      await auth.currentUser.reload();
+      setEmailVerified(auth.currentUser.emailVerified);
+    }
+  };
 
   const updateUserData = async (userId) => {
     const docRef = doc(db, "users", userId);
@@ -61,7 +68,7 @@ export const AuthContextProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      const response = await signInWithEmailAndPassword(auth, email, password);
+      await signInWithEmailAndPassword(auth, email, password);
       return { success: true };
     } catch (e) {
       let msg = e.message;
@@ -97,19 +104,22 @@ export const AuthContextProvider = ({ children }) => {
     }
 
     try {
-      const response = await createUserWithEmailAndPassword(
+      const newUserCredential = await createUserWithEmailAndPassword(
         auth,
         email,
         password
       );
-      console.log("response.user: ", response?.user);
 
-      await setDoc(doc(db, "users", response?.user?.uid), {
+      await sendEmailVerification(newUserCredential.user)
+
+      await setDoc(doc(db, "users", newUserCredential?.user?.uid), {
         username,
         profileUrl,
-        userId: response?.user?.uid,
+        userId: newUserCredential?.user?.uid,
       });
-      return { success: true, data: response?.user };
+      
+      return { success: true, data: newUserCredential?.user };
+
     } catch (e) {
       let msg = e.message;
       if (msg.includes("(auth/invalid-email")) msg = "Invalid email";
@@ -188,6 +198,8 @@ export const AuthContextProvider = ({ children }) => {
       value={{
         user,
         isAuthenticated,
+        emailVerified,
+        refreshUser,
         login,
         register,
         logout,

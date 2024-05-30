@@ -134,7 +134,7 @@ const Profile = () => {
         return true;
       }
     } catch (e) {
-      console.error("Error checking friend request: ", e);
+      console.log(`Error checking friend request: ${e}`);
     }
     return false;
   };
