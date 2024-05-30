@@ -1,6 +1,6 @@
 import { View, Text, KeyboardAvoidingView, Platform } from 'react-native'
 import React, { Children } from 'react'
-import { ScrollView } from 'react-native-gesture-handler'
+import { ScrollView } from 'react-native'
 
 export default function CustomKeyboardAvoidingView({children, inChat}) {
   let kavConfig = {}

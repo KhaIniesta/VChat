@@ -4,7 +4,7 @@ import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-nativ
 import { StatusBar } from 'expo-status-bar'
 import { Octicons } from '@expo/vector-icons'
 import { Feather } from '@expo/vector-icons';
-import { TouchableOpacity } from 'react-native-gesture-handler'
+import { TouchableOpacity } from 'react-native';
 import { tintColorLight } from '../constants/Colors'
 import { useRouter } from 'expo-router'
 import CustomKeyboardAdvoidingView from '../components/CustomKeyboardAvoidingView'

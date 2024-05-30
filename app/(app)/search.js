@@ -1,6 +1,6 @@
 import { View, Text, ActivityIndicator } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
-import { ScrollView, TextInput } from "react-native-gesture-handler";
+import { ScrollView, TextInput } from 'react-native';
 import SearchList from "../../components/searchList";
 import firebase from "firebase/compat/app";
 import { collection, doc, getDoc, getDocs, query, where } from "firebase/firestore";
