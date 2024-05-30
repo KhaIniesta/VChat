@@ -54,7 +54,7 @@ const ChatRoom = () => {
       unsub()
       KeyboardDidShowListener.remove()
     }
-  }, [item]);
+  }, [item.userId]);
   
   const updateScrollView = () => {
     scrollViewRef?.current.scrollToEnd({animated: true})

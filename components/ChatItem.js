@@ -29,7 +29,8 @@ const ChatItem = ({ item, router, noBorder, currentUser }) => {
   }, []);
 
   const openChatRoom = async() => {
-    router.push({pathname: '/chatRoom', params: item})
+    console.log('check var lap lai chat item')
+    router.push({pathname: '/(app)/chatRoom', params: item})
   }
   
   const renderTime = () => {
