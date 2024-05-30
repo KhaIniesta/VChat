@@ -4,7 +4,7 @@ import { ScrollView, TextInput } from "react-native-gesture-handler";
 import SearchList from "../../components/searchList";
 import firebase from "firebase/compat/app";
 import { collection, doc, getDoc, getDocs, query, where } from "firebase/firestore";
-import { db } from "../../firebaseConfig";
+import { auth, db } from "../../firebaseConfig";
 import { tintColorLight } from "../../constants/Colors";
 import { useAuth } from "../../context/authContext";
 
@@ -32,7 +32,7 @@ const Search = () => {
   }
   const getAllUsers = async() => {
     const userRef = collection(db, 'users')
-    const q = query(userRef, where('userId', '!=', user?.userId))
+    const q = query(userRef, where('userId', '!=', auth.currentUser?.uid))
 
     const querySnapshot = await getDocs(q)
     let data = []

@@ -1,4 +1,4 @@
-import { View, Pressable, ActivityIndicator } from 'react-native'
+import { View, Pressable, Text } from 'react-native'
 import React, { useState, useCallback  } from 'react'
 import { StatusBar } from 'expo-status-bar';
 import {
@@ -65,7 +65,7 @@ const Home = () => {
         <ChatList currentUser={user} users={users} />
       ) : (
         <View className="flex items-center" style={{ top: hp(30) }}>
-          <ActivityIndicator size="large" />
+          <Text>No friends</Text>
         </View>
       )}
     </View>
