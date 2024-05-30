@@ -42,3 +42,6 @@ expo-env.d.ts
 
 test.js 
 # Free test
+
+firebaseApiKey.js
+# secure Firebase Api Key
